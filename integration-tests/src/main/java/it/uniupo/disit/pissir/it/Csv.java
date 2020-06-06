@@ -3,12 +3,15 @@ package it.uniupo.disit.pissir.it;
 import java.util.Objects;
 
 public class Csv {
-    private final long id;
-    private final String time;
-    private final Double longitude;
-    private final Double latitude;
-    private final int transport;
-    private final Double magnification;
+    private long id;
+    private String time;
+    private Double longitude;
+    private Double latitude;
+    private int transport;
+    private Double magnification;
+
+    public Csv() {
+    }
 
     public Csv(long id, String time, Double longitude, Double latitude, int transport, Double magnification) {
         this.id = id;

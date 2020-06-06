@@ -1,7 +1,10 @@
 package it.uniupo.disit.pissir.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttTopic;
 import org.junit.Test;
 
 import java.io.File;
@@ -11,13 +14,13 @@ import java.util.stream.Stream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 
 public class MqttTest {
     CsvParser parser = new CsvParser();
     ClassLoader classLoader = getClass().getClassLoader();
     ObjectMapper objectMapper = new ObjectMapper();
-    int messageCounter = 0;
 
     @Test
     public void parseCsv() throws Exception {
@@ -43,7 +46,8 @@ public class MqttTest {
         MqttTopic testTopic = clientPublisher.getTopic("test");
 
         MqttClient clientSubscriber = new MqttClient(brokerURL, MqttClient.generateClientId());
-        clientSubscriber.setCallback(new SubscribeCallback());
+        SubscribeCallback callback = new SubscribeCallback(objectMapper);
+        clientSubscriber.setCallback(callback);
         clientSubscriber.connect();
         clientSubscriber.subscribe("test");
 
@@ -64,23 +68,7 @@ public class MqttTest {
             }
         });
 
-        await().atMost(5, SECONDS).until(() -> messageCounter == 71);
-        assertEquals(71, messageCounter);
+        await().atMost(5, SECONDS).until(callback::getMessageCounter, equalTo(71));
     }
 
-    class SubscribeCallback implements MqttCallback {
-
-        @Override
-        public void connectionLost(Throwable cause) {
-        }
-
-        @Override
-        public void messageArrived(String topic, MqttMessage message) {
-            messageCounter++;
-        }
-
-        @Override
-        public void deliveryComplete(IMqttDeliveryToken token) {
-        }
-    }
 }
