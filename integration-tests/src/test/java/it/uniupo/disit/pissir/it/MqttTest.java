@@ -1,10 +1,13 @@
 package it.uniupo.disit.pissir.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -21,6 +24,13 @@ public class MqttTest {
     CsvParser parser = new CsvParser();
     ClassLoader classLoader = getClass().getClassLoader();
     ObjectMapper objectMapper = new ObjectMapper();
+    static String brokerURL;
+
+    @BeforeClass
+    public static void setup() {
+        Config config = ConfigFactory.load();
+        brokerURL = config.getString("services.mosquitto.url");
+    }
 
     @Test
     public void parseCsv() throws Exception {
@@ -37,8 +47,6 @@ public class MqttTest {
 
     @Test
     public void publish() throws Exception {
-        String brokerURL = "tcp://localhost:1883";
-
         MqttClient clientPublisher = new MqttClient(brokerURL, MqttClient.generateClientId());
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(false);
