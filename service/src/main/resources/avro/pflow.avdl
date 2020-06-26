@@ -1,0 +1,12 @@
+@namespace("it.uniupo.disit.pissir.service.avro")
+protocol OpenPFLOW {
+
+  record Pflow {
+    int id;
+    string time;
+    double longitude;
+    double latitude;
+    int transport;
+    double magnification;
+  }
+}

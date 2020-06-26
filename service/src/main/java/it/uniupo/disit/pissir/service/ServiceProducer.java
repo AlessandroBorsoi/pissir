@@ -1,56 +1,83 @@
 package it.uniupo.disit.pissir.service;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
+import com.typesafe.config.ConfigFactory;
+import it.uniupo.disit.pissir.service.kafka.KafkaConfig;
+import it.uniupo.disit.pissir.service.kafka.KafkaService;
+import it.uniupo.disit.pissir.service.mqtt.MqttConfig;
+import it.uniupo.disit.pissir.service.mqtt.MqttService;
+import it.uniupo.disit.pissir.service.mqtt.Pflow;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
-
-import static java.util.Objects.requireNonNull;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class ServiceProducer {
-    private final KafkaConfig kafkaConfig;
-    private final static String INPUT_PATH_NAME = "~/confluent-dev/labs/datasets/shakespeare";
+    private static final Logger logger = LogManager.getLogger(ServiceProducer.class);
 
-    public ServiceProducer(KafkaConfig kafkaConfig) {
-        this.kafkaConfig = kafkaConfig;
+    private final ExecutorService executorService;
+    private final CountDownLatch latch;
+    private final MqttService mqttService;
+    private final KafkaService kafkaService;
+
+    public static void main(String[] args) {
+        logger.info("Starting Service Producer");
+        var config = ConfigFactory.load();
+        var appConfig = new AppConfig(new MqttConfig(config), new KafkaConfig(config));
+        var executorService = Executors.newFixedThreadPool(2);
+        var queue = new LinkedBlockingDeque<Pflow>();
+        try {
+            ServiceProducer serviceProducer = new ServiceProducer(appConfig, executorService, queue);
+            serviceProducer.run();
+        } catch (Exception e) {
+            logger.error("Cannot start the service", e);
+        }
     }
 
-    public void runProducer() throws IOException {
-        KafkaProducer<String, String> producer = createProducer();
-        File inputFile = new File(INPUT_PATH_NAME);
-        if (inputFile.isDirectory()) {
-            for (File fileInDirectory : requireNonNull(inputFile.listFiles())) {
-                sendFile(fileInDirectory, producer);
+    public ServiceProducer(AppConfig appConfig, ExecutorService executorService, BlockingQueue<Pflow> queue) {
+        this.executorService = executorService;
+        this.latch = new CountDownLatch(2);
+        this.mqttService = new MqttService(appConfig.getMqttConfig(), queue, latch);
+        this.kafkaService = new KafkaService(appConfig.getKafkaConfig(), queue, latch);
+    }
+
+    public void run() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (!executorService.isShutdown()) {
+                logger.info("Shutdown requested");
+                shutdown();
             }
-        } else {
-            sendFile(inputFile, producer);
+        }));
+
+        logger.info("Application started!");
+        executorService.submit(mqttService);
+        executorService.submit(kafkaService);
+        try {
+            logger.info("Latch await");
+            latch.await();
+            logger.info("Threads completed");
+        } catch (InterruptedException e) {
+            logger.error(e);
+        } finally {
+            shutdown();
+            logger.info("Application closed successfully");
         }
     }
 
-    private KafkaProducer<String, String> createProducer() {
-        Properties settings = new Properties();
-        settings.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getServerConfig());
-        settings.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        settings.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        return new KafkaProducer<>(settings);
-    }
-
-    private void sendFile(File inputFile, KafkaProducer<String, String> producer) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-        String key = inputFile.getName().split("\\.")[0];
-        String line;
-        while ((line = reader.readLine()) != null) {
-            ProducerRecord<String, String> record = new ProducerRecord<>("shakespeare_topic", key, line);
-            producer.send(record);
+    private void shutdown() {
+        if (!executorService.isShutdown()) {
+            logger.info("Shutting down");
+            executorService.shutdownNow();
+            try {
+                if (!executorService.awaitTermination(2000, TimeUnit.MILLISECONDS)) {
+                    logger.warn("Executor did not terminate in the specified time.");
+                    List<Runnable> droppedTasks = executorService.shutdownNow();
+                    logger.warn("Executor was abruptly shut down. " + droppedTasks.size() + " tasks will not be executed.");
+                }
+            } catch (InterruptedException e) {
+                logger.error(e);
+            }
         }
-        reader.close();
-        System.out.println("Finished producing file: " + inputFile.getName());
     }
 
 }
