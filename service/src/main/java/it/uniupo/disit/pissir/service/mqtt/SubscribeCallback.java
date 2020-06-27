@@ -13,9 +13,9 @@ class SubscribeCallback implements MqttCallback {
     private static final Logger logger = LogManager.getLogger(SubscribeCallback.class);
 
     private final ObjectMapper objectMapper;
-    private final BlockingQueue<Pflow> queue;
+    private final BlockingQueue<OpenPflowRaw> queue;
 
-    public SubscribeCallback(ObjectMapper objectMapper, BlockingQueue<Pflow> queue) {
+    public SubscribeCallback(ObjectMapper objectMapper, BlockingQueue<OpenPflowRaw> queue) {
         this.objectMapper = objectMapper;
         this.queue = queue;
     }
@@ -27,7 +27,8 @@ class SubscribeCallback implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) {
         try {
-            var event = objectMapper.readValue(message.getPayload(), Pflow.class);
+            var event = objectMapper.readValue(message.getPayload(), OpenPflowRaw.class);
+            logger.debug("Event read: " + event);
             queue.put(event);
         } catch (Exception e) {
             logger.error("Cannot parse PFLOW event", e);

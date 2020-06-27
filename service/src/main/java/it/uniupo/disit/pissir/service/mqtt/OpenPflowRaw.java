@@ -2,18 +2,18 @@ package it.uniupo.disit.pissir.service.mqtt;
 
 import java.util.Objects;
 
-public class Pflow {
-    private long id;
+public class OpenPflowRaw {
+    private int id;
     private String time;
     private Double longitude;
     private Double latitude;
     private int transport;
     private Double magnification;
 
-    public Pflow() {
+    public OpenPflowRaw() {
     }
 
-    public Pflow(long id, String time, Double longitude, Double latitude, int transport, Double magnification) {
+    public OpenPflowRaw(int id, String time, Double longitude, Double latitude, int transport, Double magnification) {
         this.id = id;
         this.time = time;
         this.longitude = longitude;
@@ -22,7 +22,7 @@ public class Pflow {
         this.magnification = magnification;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
@@ -50,13 +50,13 @@ public class Pflow {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Pflow pflow = (Pflow) o;
-        return id == pflow.id &&
-                transport == pflow.transport &&
-                time.equals(pflow.time) &&
-                longitude.equals(pflow.longitude) &&
-                latitude.equals(pflow.latitude) &&
-                magnification.equals(pflow.magnification);
+        OpenPflowRaw openPflowRaw = (OpenPflowRaw) o;
+        return id == openPflowRaw.id &&
+                transport == openPflowRaw.transport &&
+                time.equals(openPflowRaw.time) &&
+                longitude.equals(openPflowRaw.longitude) &&
+                latitude.equals(openPflowRaw.latitude) &&
+                magnification.equals(openPflowRaw.magnification);
     }
 
     @Override

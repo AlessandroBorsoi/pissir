@@ -1,14 +1,15 @@
 package it.uniupo.disit.pissir.service.kafka;
 
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
-import it.uniupo.disit.pissir.service.mqtt.Pflow;
+import it.uniupo.disit.pissir.service.avro.OpenPflow;
+import it.uniupo.disit.pissir.service.mqtt.OpenPflowRaw;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
 
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
@@ -19,11 +20,11 @@ public class KafkaService implements Runnable {
     private static final Logger logger = LogManager.getLogger(KafkaService.class);
 
     private final KafkaConfig kafkaConfig;
-    private final BlockingQueue<Pflow> queue;
+    private final BlockingQueue<OpenPflowRaw> queue;
     private final CountDownLatch latch;
-    private final KafkaProducer<Long, Pflow> kafkaProducer;
+    private final KafkaProducer<Long, OpenPflow> kafkaProducer;
 
-    public KafkaService(KafkaConfig kafkaConfig, BlockingQueue<Pflow> queue, CountDownLatch latch) {
+    public KafkaService(KafkaConfig kafkaConfig, BlockingQueue<OpenPflowRaw> queue, CountDownLatch latch) {
         this.kafkaConfig = kafkaConfig;
         this.queue = queue;
         this.latch = latch;
@@ -32,11 +33,16 @@ public class KafkaService implements Runnable {
 
     @Override
     public void run() {
+        logger.debug("ciao");
         try {
             while (latch.getCount() > 1 || queue.size() > 0) {
-                Pflow pflow = queue.poll(200, TimeUnit.MILLISECONDS);
-                if (pflow != null) {
-                    kafkaProducer.send(new ProducerRecord<>(kafkaConfig.getTopic(), pflow.getId(), pflow));
+                OpenPflowRaw openPflowRaw = queue.poll(200, TimeUnit.MILLISECONDS);
+                if (openPflowRaw != null) {
+                    logger.debug("Event received: " + openPflowRaw);
+                    OpenPflowConverter.from(openPflowRaw).ifPresentOrElse(
+                            pflow -> kafkaProducer.send(new ProducerRecord<>(kafkaConfig.getTopic(), pflow)),
+                            () -> logger.error("Invalid message")
+                    );
                 }
             }
         } catch (InterruptedException e) {
@@ -48,7 +54,7 @@ public class KafkaService implements Runnable {
         }
     }
 
-    public KafkaProducer<Long, Pflow> createKafkaProducer(KafkaConfig kafkaConfig) {
+    public KafkaProducer<Long, OpenPflow> createKafkaProducer(KafkaConfig kafkaConfig) {
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getUrl());
         properties.put(ProducerConfig.ACKS_CONFIG, "all");
@@ -59,6 +65,6 @@ public class KafkaService implements Runnable {
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
         properties.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, kafkaConfig.getSchemaRegistryUrl());
-        return new org.apache.kafka.clients.producer.KafkaProducer<>(properties);
+        return new KafkaProducer<>(properties);
     }
 }

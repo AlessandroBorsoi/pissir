@@ -25,11 +25,13 @@ public class MqttTest {
     ClassLoader classLoader = getClass().getClassLoader();
     ObjectMapper objectMapper = new ObjectMapper();
     static String brokerURL;
+    static String topic;
 
     @BeforeClass
     public static void setup() {
         Config config = ConfigFactory.load();
         brokerURL = config.getString("services.mosquitto.url");
+        topic = config.getString("services.mosquitto.topic");
     }
 
     @Test
@@ -51,13 +53,13 @@ public class MqttTest {
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(false);
         clientPublisher.connect(options);
-        MqttTopic testTopic = clientPublisher.getTopic("test");
+        MqttTopic testTopic = clientPublisher.getTopic(topic);
 
         MqttClient clientSubscriber = new MqttClient(brokerURL, MqttClient.generateClientId());
         SubscribeCallback callback = new SubscribeCallback(objectMapper);
         clientSubscriber.setCallback(callback);
         clientSubscriber.connect();
-        clientSubscriber.subscribe("test");
+        clientSubscriber.subscribe(topic);
 
         URL resource = classLoader.getResource("small.csv");
         assertNotNull(resource);

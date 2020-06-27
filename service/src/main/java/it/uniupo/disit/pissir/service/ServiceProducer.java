@@ -5,7 +5,7 @@ import it.uniupo.disit.pissir.service.kafka.KafkaConfig;
 import it.uniupo.disit.pissir.service.kafka.KafkaService;
 import it.uniupo.disit.pissir.service.mqtt.MqttConfig;
 import it.uniupo.disit.pissir.service.mqtt.MqttService;
-import it.uniupo.disit.pissir.service.mqtt.Pflow;
+import it.uniupo.disit.pissir.service.mqtt.OpenPflowRaw;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +25,7 @@ public class ServiceProducer {
         var config = ConfigFactory.load();
         var appConfig = new AppConfig(new MqttConfig(config), new KafkaConfig(config));
         var executorService = Executors.newFixedThreadPool(2);
-        var queue = new LinkedBlockingDeque<Pflow>();
+        var queue = new LinkedBlockingDeque<OpenPflowRaw>();
         try {
             ServiceProducer serviceProducer = new ServiceProducer(appConfig, executorService, queue);
             serviceProducer.run();
@@ -34,7 +34,7 @@ public class ServiceProducer {
         }
     }
 
-    public ServiceProducer(AppConfig appConfig, ExecutorService executorService, BlockingQueue<Pflow> queue) {
+    public ServiceProducer(AppConfig appConfig, ExecutorService executorService, BlockingQueue<OpenPflowRaw> queue) {
         this.executorService = executorService;
         this.latch = new CountDownLatch(2);
         this.mqttService = new MqttService(appConfig.getMqttConfig(), queue, latch);
