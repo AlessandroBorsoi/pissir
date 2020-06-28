@@ -103,11 +103,8 @@ public class EndToEndTest {
             }
         });
 
-        await().atMost(5, SECONDS).until(callback::getMessageCounter, equalTo(71));
-
-        long documents = collection.countDocuments();
-
-        assertEquals(71, documents);
+        await().atMost(10, SECONDS).until(callback::getMessageCounter, equalTo(71));
+        await().atMost(10, SECONDS).until(collection::countDocuments, equalTo(71L));
     }
 
 }
