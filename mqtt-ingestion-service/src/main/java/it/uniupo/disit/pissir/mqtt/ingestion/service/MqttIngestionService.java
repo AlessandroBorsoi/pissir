@@ -12,8 +12,8 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class ServiceProducer {
-    private static final Logger logger = LogManager.getLogger(ServiceProducer.class);
+public class MqttIngestionService {
+    private static final Logger logger = LogManager.getLogger(MqttIngestionService.class);
 
     private final ExecutorService executorService;
     private final CountDownLatch latch;
@@ -27,14 +27,14 @@ public class ServiceProducer {
         var executorService = Executors.newFixedThreadPool(2);
         var queue = new LinkedBlockingDeque<OpenPflowRaw>();
         try {
-            ServiceProducer serviceProducer = new ServiceProducer(appConfig, executorService, queue);
-            serviceProducer.run();
+            MqttIngestionService mqttIngestionService = new MqttIngestionService(appConfig, executorService, queue);
+            mqttIngestionService.run();
         } catch (Exception e) {
             logger.error("Cannot start the service", e);
         }
     }
 
-    public ServiceProducer(AppConfig appConfig, ExecutorService executorService, BlockingQueue<OpenPflowRaw> queue) {
+    public MqttIngestionService(AppConfig appConfig, ExecutorService executorService, BlockingQueue<OpenPflowRaw> queue) {
         this.executorService = executorService;
         this.latch = new CountDownLatch(2);
         this.mqttService = new MqttService(appConfig.getMqttConfig(), queue);

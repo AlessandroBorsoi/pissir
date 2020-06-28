@@ -1,0 +1,16 @@
+@namespace("it.uniupo.disit.pissir.mqtt.ingestion.service.avro")
+protocol OpenPFLOW {
+
+  record OpenPflow {
+    int id;
+    int transport;
+    double magnification;
+    Location location;
+    timestamp_ms timestamp;
+  }
+
+  record Location {
+    string type;
+    array<double> coordinates;
+  }
+}
