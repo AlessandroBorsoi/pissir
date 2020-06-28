@@ -28,7 +28,6 @@ class SubscribeCallback implements MqttCallback {
     public void messageArrived(String topic, MqttMessage message) {
         try {
             var event = objectMapper.readValue(message.getPayload(), OpenPflowRaw.class);
-            logger.debug("Event read: " + event);
             queue.put(event);
         } catch (Exception e) {
             logger.error("Cannot parse PFLOW event", e);

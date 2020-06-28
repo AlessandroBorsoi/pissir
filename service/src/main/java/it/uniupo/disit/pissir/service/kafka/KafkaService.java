@@ -33,12 +33,10 @@ public class KafkaService implements Runnable {
 
     @Override
     public void run() {
-        logger.debug("ciao");
         try {
             while (latch.getCount() > 1 || queue.size() > 0) {
                 OpenPflowRaw openPflowRaw = queue.poll(200, TimeUnit.MILLISECONDS);
                 if (openPflowRaw != null) {
-                    logger.debug("Event received: " + openPflowRaw);
                     OpenPflowConverter.from(openPflowRaw).ifPresentOrElse(
                             pflow -> kafkaProducer.send(new ProducerRecord<>(kafkaConfig.getTopic(), pflow)),
                             () -> logger.error("Invalid message")

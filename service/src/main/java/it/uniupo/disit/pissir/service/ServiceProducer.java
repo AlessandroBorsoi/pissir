@@ -37,7 +37,7 @@ public class ServiceProducer {
     public ServiceProducer(AppConfig appConfig, ExecutorService executorService, BlockingQueue<OpenPflowRaw> queue) {
         this.executorService = executorService;
         this.latch = new CountDownLatch(2);
-        this.mqttService = new MqttService(appConfig.getMqttConfig(), queue, latch);
+        this.mqttService = new MqttService(appConfig.getMqttConfig(), queue);
         this.kafkaService = new KafkaService(appConfig.getKafkaConfig(), queue, latch);
     }
 

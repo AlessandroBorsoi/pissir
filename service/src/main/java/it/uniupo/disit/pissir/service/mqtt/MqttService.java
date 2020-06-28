@@ -13,20 +13,16 @@ public class MqttService implements Runnable {
 
     private final MqttConfig mqttConfig;
     private final BlockingQueue<OpenPflowRaw> queue;
-    private final CountDownLatch latch;
 
-    public MqttService(MqttConfig mqttConfig, BlockingQueue<OpenPflowRaw> queue, CountDownLatch latch) {
+    public MqttService(MqttConfig mqttConfig, BlockingQueue<OpenPflowRaw> queue) {
         this.mqttConfig = mqttConfig;
         this.queue = queue;
-        this.latch = latch;
     }
 
     @Override
     public void run() {
         try {
-            logger.debug("ciao");
             var mqttClient = new MqttClient(mqttConfig.getUrl(), MqttClient.generateClientId());
-            logger.debug("ciao1");
             var callback = new SubscribeCallback(new ObjectMapper(), queue);
             mqttClient.setCallback(callback);
             mqttClient.connect();
@@ -35,8 +31,6 @@ public class MqttService implements Runnable {
             logger.info("The subscriber is now listening to " + topic + "...");
         } catch (Exception e) {
             logger.error(e);
-        } finally {
-            //latch.countDown();
         }
     }
 
