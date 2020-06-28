@@ -13,3 +13,9 @@ printf "\nUp\n"
 printf "Configuring connectors...\n"
 printf "MongoDB sink connector...\n"
 curl -d @./docker/service-architecture/connect-mongodb-sink.json -H "Content-Type: application/json" -X POST http://localhost:8083/connectors
+
+printf "Building service...\n"
+gradle clean :service:build
+
+printf "starting service...\n"
+java -jar service/build/libs/service-0.1-all.jar
