@@ -53,22 +53,6 @@ services:
       - zookeeper
       - kafka
 
-  kafka-rest-proxy:
-    image: confluentinc/cp-kafka-rest:5.5.0
-    hostname: kafka-rest-proxy
-    ports:
-      - "8082:8082"
-    environment:
-      # KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_REST_LISTENERS: http://0.0.0.0:8082/
-      KAFKA_REST_SCHEMA_REGISTRY_URL: http://kafka-schema-registry:8081/
-      KAFKA_REST_HOST_NAME: kafka-rest-proxy
-      KAFKA_REST_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:19092
-    depends_on:
-      - zookeeper
-      - kafka
-      - kafka-schema-registry
-
   kafka-connect:
     image: confluentinc/cp-kafka-connect:5.5.0
     hostname: kafka-connect
@@ -85,8 +69,8 @@ services:
       CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://kafka-schema-registry:8081'
       CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
       CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://kafka-schema-registry:8081'
-      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
       CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect"
       CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
       CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
@@ -95,7 +79,7 @@ services:
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
       CONNECT_PLUGIN_PATH: '/usr/local/share/kafka/plugins,/etc/kafka-connect/jars'
     volumes:
-      - ../connectors:/usr/local/share/kafka/plugins
+      - ../connectors:/usr/local/share/kafka/plugins/
     depends_on:
       - zookeeper
       - kafka
@@ -107,13 +91,30 @@ services:
     image: mongo:latest
     hostname: mongo-db
     container_name: mongo-db
+    environment:
+      - MONGO_INITDB_DATABASE=pissir
     expose:
       - "27017"
     ports:
       - "27017:27017"
-    command: --bind_ip_all --smallfiles
     volumes:
       - /tmp/volumes/mongo-db:/data
+
+  kafka-rest-proxy:
+    image: confluentinc/cp-kafka-rest:5.5.0
+    hostname: kafka-rest-proxy
+    ports:
+      - "8082:8082"
+    environment:
+      # KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_REST_LISTENERS: http://0.0.0.0:8082/
+      KAFKA_REST_SCHEMA_REGISTRY_URL: http://kafka-schema-registry:8081/
+      KAFKA_REST_HOST_NAME: kafka-rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:19092
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka-schema-registry
 
   schema-registry-ui:
     image: landoop/schema-registry-ui:0.9.4
