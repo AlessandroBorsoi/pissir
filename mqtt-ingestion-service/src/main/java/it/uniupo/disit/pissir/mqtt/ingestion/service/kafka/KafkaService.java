@@ -2,7 +2,7 @@ package it.uniupo.disit.pissir.mqtt.ingestion.service.kafka;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
-import it.uniupo.disit.pissir.mqtt.ingestion.service.avro.OpenPflow;
+import it.uniupo.disit.pissir.avro.OpenPflow;
 import it.uniupo.disit.pissir.mqtt.ingestion.service.mqtt.OpenPflowRaw;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;

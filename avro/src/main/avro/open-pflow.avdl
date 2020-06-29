@@ -1,4 +1,4 @@
-@namespace("it.uniupo.disit.pissir.mqtt.ingestion.service.avro")
+@namespace("it.uniupo.disit.pissir.avro")
 protocol OpenPFLOW {
 
   record OpenPflow {

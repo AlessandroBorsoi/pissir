@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+dependencies {
+    implementation 'com.bmuschko:gradle-docker-plugin:6.4.0'
+    implementation 'com.typesafe:config:1.4.0'
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
+    testImplementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.4'
+    testImplementation 'org.awaitility:awaitility:4.0.3'
+    testImplementation 'org.mongodb:mongo-java-driver:3.12.5'
+
+}
+
+test {
+    useJUnit()
+    maxHeapSize = '4G'
+}
