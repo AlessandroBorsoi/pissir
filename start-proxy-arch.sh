@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+printf "Building service...\n"
+gradle clean :mqtt-proxy-service:build :mqtt-proxy-service:docker
+
 printf "Running docker compose...\n"
 docker-compose -f ./docker/proxy-architecture/docker-compose.yml up -d
 

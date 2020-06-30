@@ -33,6 +33,16 @@ services:
     depends_on:
       - zookeeper
 
+  mqtt-proxy-service:
+    image: mqtt-proxy-service:0.1
+    hostname: mqtt-proxy-service
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
+      SCHEMA_REGISTRY_URL: "http://kafka-schema-registry:8081"
+    depends_on:
+      - kafka
+      - kafka-schema-registry
+
   mqtt-proxy:
     image: confluentinc/cp-kafka-mqtt:5.5.0
     hostname: mqtt-proxy
