@@ -37,7 +37,7 @@ services:
     image: mqtt-proxy-service:0.1
     hostname: mqtt-proxy-service
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:19092
       SCHEMA_REGISTRY_URL: "http://kafka-schema-registry:8081"
     depends_on:
       - kafka
