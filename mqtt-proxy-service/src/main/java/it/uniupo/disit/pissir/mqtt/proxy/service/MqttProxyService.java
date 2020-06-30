@@ -9,15 +9,16 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.ValueMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -51,29 +52,31 @@ public class MqttProxyService {
         properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, appConfig.getBootstrapServers());
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         properties.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.AT_LEAST_ONCE);
-        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
         properties.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, appConfig.getSchemaRegistryUrl());
         return properties;
     }
 
     private KafkaStreams createKafkaStream(Properties properties) {
         Serde<String> stringSerde = Serdes.String();
+        SpecificAvroSerde<OpenPflow> openPflowSpecificAvroSerde = new SpecificAvroSerde<>();
+        openPflowSpecificAvroSerde.configure(Map.of(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, appConfig.getSchemaRegistryUrl()), false);
         StreamsBuilder builder = new StreamsBuilder();
-        KStream<String, OpenPflow> openPflow = builder
+        builder
                 .stream(appConfig.getSourceTopicName(), Consumed.with(stringSerde, stringSerde))
                 .mapValues(parseMessage())
                 .filter((k, v) -> Objects.nonNull(v))
                 .mapValues(OpenPflowConverter::from)
                 .filter((k, v) -> v.isPresent())
-                .mapValues(Optional::get);
-        openPflow.to(appConfig.getDestinationTopicName(), Produced.with(stringSerde, new SpecificAvroSerde<>()));
+                .mapValues(Optional::get)
+                .map((k, v) -> KeyValue.pair(null, v))
+                .to(appConfig.getDestinationTopicName(), Produced.with(null, openPflowSpecificAvroSerde));
         return new KafkaStreams(builder.build(), properties);
     }
 
     private ValueMapper<String, OpenPflowRaw> parseMessage() {
-        return string -> {
+        return value -> {
             try {
-                return objectMapper.readValue(string, OpenPflowRaw.class);
+                return objectMapper.readValue(value, OpenPflowRaw.class);
             } catch (Exception e) {
                 logger.error("Cannot parse message", e);
                 return null;

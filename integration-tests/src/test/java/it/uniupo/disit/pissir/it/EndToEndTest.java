@@ -52,6 +52,7 @@ public class EndToEndTest {
         MongoClient mongoClient = new MongoClient(mongoDbHost, mongoDbPort);
         MongoDatabase database = mongoClient.getDatabase(mongoDbDatabase);
         this.collection = database.getCollection("OpenPFLOW");
+        collection.drop();
     }
 
     @After
@@ -81,12 +82,6 @@ public class EndToEndTest {
         clientPublisher.connect(options);
         MqttTopic testTopic = clientPublisher.getTopic(topic);
 
-//        MqttClient clientSubscriber = new MqttClient(brokerURL, MqttClient.generateClientId());
-//        SubscribeCallback callback = new SubscribeCallback(objectMapper);
-//        clientSubscriber.setCallback(callback);
-//        clientSubscriber.connect();
-//        clientSubscriber.subscribe(topic);
-
         URL resource = classLoader.getResource("small.csv");
         assertNotNull(resource);
         File file = new File(resource.getFile());
@@ -104,7 +99,6 @@ public class EndToEndTest {
             }
         });
 
-        //await().atMost(10, SECONDS).until(callback::getMessageCounter, equalTo(71));
         await().atMost(10, SECONDS).until(collection::countDocuments, equalTo(71L));
     }
 
