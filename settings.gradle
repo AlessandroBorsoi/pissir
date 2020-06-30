@@ -1,3 +1,4 @@
 rootProject.name = 'pissir'
 
-include 'integration-tests', 'service'
+include 'integration-tests', 'mqtt-ingestion-service', 'mqtt-proxy-service', 'avro'
+
