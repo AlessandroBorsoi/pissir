@@ -25,7 +25,7 @@ public class MqttIngestionService {
 
     public static void main(String[] args) {
         logger.info("Starting MQTT Ingestion Service");
-        
+
         var config = ConfigFactory.load();
         var appConfig = new AppConfig(new MqttConfig(config), new KafkaConfig(config));
         var kafkaProducer = createKafkaProducer(appConfig.getKafkaConfig());
@@ -47,6 +47,11 @@ public class MqttIngestionService {
     }
 
     public void run() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.debug("Shutdown requested...");
+            latch.countDown();
+        }));
+
         logger.info("Application started!");
         mqttService.run();
         try {

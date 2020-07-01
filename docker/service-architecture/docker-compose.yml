@@ -54,17 +54,17 @@ services:
       - zookeeper
       - kafka
 
-  mqtt-ingestion-service:
-    image: mqtt-ingestion-service:0.1
-    hostname: mqtt-proxy-service
-    environment:
-      MOSQUITTO_URL: "tcp://mosquitto:1883"
-      KAFKA_URL: PLAINTEXT://kafka:19092
-      SCHEMA_REGISTRY_URL: "http://kafka-schema-registry:8081"
-    depends_on:
-      - mosquitto
-      - kafka
-      - kafka-schema-registry
+#  mqtt-ingestion-service:
+#    image: mqtt-ingestion-service:0.1
+#    hostname: mqtt-proxy-service
+#    environment:
+#      MOSQUITTO_URL: "tcp://mosquitto:1883"
+#      KAFKA_URL: PLAINTEXT://kafka:19092
+#      SCHEMA_REGISTRY_URL: "http://kafka-schema-registry:8081"
+#    depends_on:
+#      - mosquitto
+#      - kafka
+#      - kafka-schema-registry
 
   kafka-connect:
     image: confluentinc/cp-kafka-connect:5.5.0
