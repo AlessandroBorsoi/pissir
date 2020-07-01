@@ -28,15 +28,15 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 
 public class EndToEndTest {
-    CsvParser parser = new CsvParser();
-    ClassLoader classLoader = getClass().getClassLoader();
-    ObjectMapper objectMapper = new ObjectMapper();
-    static String brokerURL;
-    static String topic;
-    static String mongoDbHost;
-    static int mongoDbPort;
-    static String mongoDbDatabase;
-    MongoCollection<Document> collection;
+    private final CsvParser parser = new CsvParser();
+    private final ClassLoader classLoader = getClass().getClassLoader();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static String brokerURL;
+    private static String topic;
+    private static String mongoDbHost;
+    private static int mongoDbPort;
+    private static String mongoDbDatabase;
+    private MongoCollection<Document> collection;
 
     @BeforeClass
     public static void setup() {
@@ -68,7 +68,7 @@ public class EndToEndTest {
         File file = new File(resource.getFile());
 
         Stream<Csv> csvStream = parser.csvLines(file)
-                .map(line -> parser.parse(line))
+                .map(parser::parse)
                 .flatMap(Optional::stream);
 
         assertEquals(71, csvStream.count());
@@ -88,7 +88,7 @@ public class EndToEndTest {
         File file = new File(resource.getFile());
 
         Stream<Csv> csvStream = parser.csvLines(file)
-                .map(line -> parser.parse(line))
+                .map(parser::parse)
                 .flatMap(Optional::stream);
 
         csvStream.forEach(csv -> {
