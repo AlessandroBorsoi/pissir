@@ -5,6 +5,7 @@ import it.uniupo.disit.pissir.mqtt.ingestion.service.kafka.KafkaService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -24,7 +25,7 @@ public class MqttService implements Runnable {
     @Override
     public void run() {
         try {
-            var mqttClient = new MqttClient(mqttConfig.getUrl(), MqttClient.generateClientId());
+            var mqttClient = new MqttClient(mqttConfig.getUrl(), MqttClient.generateClientId(), new MqttDefaultFilePersistence("/tmp"));
             var callback = new MqttServiceCallback(new ObjectMapper(), kafkaService, latch);
             mqttClient.setCallback(callback);
             mqttClient.connect();
