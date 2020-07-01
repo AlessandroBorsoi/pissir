@@ -1,6 +1,5 @@
-package it.uniupo.disit.pissir.mqtt.ingestion.service;
+package it.uniupo.disit.pissir.mqtt.ingestion.service.dto;
 
-import it.uniupo.disit.pissir.mqtt.ingestion.service.mqtt.OpenPflowRaw;
 import org.junit.Test;
 
 import java.time.Instant;

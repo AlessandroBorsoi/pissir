@@ -1,4 +1,4 @@
-package it.uniupo.disit.pissir.mqtt.ingestion.service.mqtt;
+package it.uniupo.disit.pissir.mqtt.ingestion.service.dto;
 
 import java.util.Objects;
 
