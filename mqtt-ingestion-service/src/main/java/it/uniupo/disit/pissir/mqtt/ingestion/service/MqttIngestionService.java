@@ -2,7 +2,6 @@ package it.uniupo.disit.pissir.mqtt.ingestion.service;
 
 import com.typesafe.config.ConfigFactory;
 import it.uniupo.disit.pissir.mqtt.ingestion.service.kafka.KafkaConfig;
-import it.uniupo.disit.pissir.mqtt.ingestion.service.kafka.KafkaService;
 import it.uniupo.disit.pissir.mqtt.ingestion.service.mqtt.MqttConfig;
 import it.uniupo.disit.pissir.mqtt.ingestion.service.mqtt.MqttService;
 import it.uniupo.disit.pissir.mqtt.ingestion.service.mqtt.OpenPflowRaw;
@@ -18,10 +17,10 @@ public class MqttIngestionService {
     private final ExecutorService executorService;
     private final CountDownLatch latch;
     private final MqttService mqttService;
-    private final KafkaService kafkaService;
+    private final KafkaServiceImpl kafkaServiceImpl;
 
     public static void main(String[] args) {
-        logger.info("Starting Service Producer");
+        logger.info("Starting MQTT Ingestion Service");
         var config = ConfigFactory.load();
         var appConfig = new AppConfig(new MqttConfig(config), new KafkaConfig(config));
         var executorService = Executors.newFixedThreadPool(2);
@@ -38,7 +37,7 @@ public class MqttIngestionService {
         this.executorService = executorService;
         this.latch = new CountDownLatch(2);
         this.mqttService = new MqttService(appConfig.getMqttConfig(), queue);
-        this.kafkaService = new KafkaService(appConfig.getKafkaConfig(), queue, latch);
+        this.kafkaServiceImpl = new KafkaServiceImpl(appConfig.getKafkaConfig(), queue, latch);
     }
 
     public void run() {
@@ -51,7 +50,7 @@ public class MqttIngestionService {
 
         logger.info("Application started!");
         executorService.submit(mqttService);
-        executorService.submit(kafkaService);
+        executorService.submit(kafkaServiceImpl);
         try {
             logger.info("Latch await");
             latch.await();

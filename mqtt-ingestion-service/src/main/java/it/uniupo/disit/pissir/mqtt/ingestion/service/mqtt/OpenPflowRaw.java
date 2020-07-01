@@ -63,4 +63,16 @@ public class OpenPflowRaw {
     public int hashCode() {
         return Objects.hash(id, time, longitude, latitude, transport, magnification);
     }
+
+    @Override
+    public String toString() {
+        return "OpenPflowRaw{" +
+                "id=" + id +
+                ", time='" + time + '\'' +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                ", transport=" + transport +
+                ", magnification=" + magnification +
+                '}';
+    }
 }

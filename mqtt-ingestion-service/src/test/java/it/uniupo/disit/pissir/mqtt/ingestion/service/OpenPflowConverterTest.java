@@ -1,4 +1,4 @@
-package it.uniupo.disit.pissir.mqtt.ingestion.service.kafka;
+package it.uniupo.disit.pissir.mqtt.ingestion.service;
 
 import it.uniupo.disit.pissir.mqtt.ingestion.service.mqtt.OpenPflowRaw;
 import org.junit.Test;
