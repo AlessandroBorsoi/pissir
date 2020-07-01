@@ -11,6 +11,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -75,7 +76,7 @@ public class EndToEndTest {
 
     @Test
     public void publish() throws Exception {
-        MqttClient clientPublisher = new MqttClient(brokerURL, MqttClient.generateClientId());
+        MqttClient clientPublisher = new MqttClient(brokerURL, MqttClient.generateClientId(), new MqttDefaultFilePersistence("/tmp"));
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(false);
         options.setMaxInflight(1000);

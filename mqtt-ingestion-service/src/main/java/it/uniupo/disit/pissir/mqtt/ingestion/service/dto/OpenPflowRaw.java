@@ -1,4 +1,4 @@
-package it.uniupo.disit.pissir.mqtt.ingestion.service.mqtt;
+package it.uniupo.disit.pissir.mqtt.ingestion.service.dto;
 
 import java.util.Objects;
 
@@ -62,5 +62,17 @@ public class OpenPflowRaw {
     @Override
     public int hashCode() {
         return Objects.hash(id, time, longitude, latitude, transport, magnification);
+    }
+
+    @Override
+    public String toString() {
+        return "OpenPflowRaw{" +
+                "id=" + id +
+                ", time='" + time + '\'' +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                ", transport=" + transport +
+                ", magnification=" + magnification +
+                '}';
     }
 }
