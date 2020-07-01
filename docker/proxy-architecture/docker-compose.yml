@@ -28,10 +28,36 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     volumes:
       - /tmp/volumes/kafka/data:/var/lib/kafka/data
     depends_on:
       - zookeeper
+
+  kafka-setup:
+    image: confluentinc/cp-kafka:5.5.0
+    hostname: kafka-setup
+    container_name: kafka-setup
+    depends_on:
+      - kafka
+      - kafka-schema-registry
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b kafka:19092 1 20 && \
+                       kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 --topic pflow'"
+    environment:
+      KAFKA_BROKER_ID: ignored
+      KAFKA_ZOOKEEPER_CONNECT: ignored
+
+  mqtt-proxy-service:
+    image: mqtt-proxy-service:0.1
+    hostname: mqtt-proxy-service
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:19092
+      SCHEMA_REGISTRY_URL: "http://kafka-schema-registry:8081"
+    depends_on:
+      - kafka
+      - kafka-schema-registry
+      - kafka-setup
 
   mqtt-proxy:
     image: confluentinc/cp-kafka-mqtt:5.5.0

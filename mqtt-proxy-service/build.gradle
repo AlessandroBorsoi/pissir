@@ -2,6 +2,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '6.0.0'
     id 'java'
     id 'application'
+    id "com.palantir.docker" version "0.25.0"
 }
 
 dependencies {
@@ -20,6 +21,15 @@ dependencies {
 
 application {
     mainClassName = 'it.uniupo.disit.pissir.mqtt.proxy.service.MqttProxyService'
+}
+
+shadowJar {
+    archiveFileName = "mqtt-proxy-service.jar"
+}
+
+docker {
+    name "${project.name}:${project.version}"
+    files "build/libs/mqtt-proxy-service.jar"
 }
 
 sourceCompatibility = 11

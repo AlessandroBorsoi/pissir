@@ -2,7 +2,10 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '6.0.0'
     id 'java'
     id 'application'
+    id "com.palantir.docker" version "0.25.0"
 }
+
+
 
 dependencies {
     implementation project(':avro')
@@ -19,6 +22,15 @@ dependencies {
 
 application {
     mainClassName = 'it.uniupo.disit.pissir.mqtt.ingestion.service.MqttIngestionService'
+}
+
+shadowJar {
+    archiveFileName = "mqtt-ingestion-service.jar"
+}
+
+docker {
+    name "${project.name}:${project.version}"
+    files 'build/libs/mqtt-ingestion-service.jar'
 }
 
 sourceCompatibility = 11

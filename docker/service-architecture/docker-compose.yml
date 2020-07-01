@@ -35,6 +35,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     volumes:
       - /tmp/volumes/kafka/data:/var/lib/kafka/data
     depends_on:
@@ -52,6 +53,18 @@ services:
     depends_on:
       - zookeeper
       - kafka
+
+  mqtt-ingestion-service:
+    image: mqtt-ingestion-service:0.1
+    hostname: mqtt-proxy-service
+    environment:
+      MOSQUITTO_URL: "tcp://mosquitto:1883"
+      KAFKA_URL: PLAINTEXT://kafka:19092
+      SCHEMA_REGISTRY_URL: "http://kafka-schema-registry:8081"
+    depends_on:
+      - mosquitto
+      - kafka
+      - kafka-schema-registry
 
   kafka-connect:
     image: confluentinc/cp-kafka-connect:5.5.0
