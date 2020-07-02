@@ -1,14 +1,22 @@
 # Descrizione del sistema da realizzare
 
-Lo scopo di questo progetto è quello di realizzare un sistema che sia in grado di raccogliere (potenzialmente molti) dati da uno o più sistemi esterni, processarli velocemente e renderli disponibili per un'analisi più dettagliata con tecniche opportune, raccogliendoli in un data store adeguato. In particolare si utilizzeranno come input i dati forniti dal dataset open sugli spostamenti urbani di Tokyo [OpenPFLOW](https://github.com/sekilab/OpenPFLOW), che verranno dapprima riversati su [Kafka](https://kafka.apache.org/) e poi riorganizzati all'interno di [MongoDB](https://www.mongodb.com/).
+Lo scopo di questo progetto è quello di realizzare un sistema che sia in grado di raccogliere (potenzialmente molti) dati da uno o più sistemi esterni, processarli velocemente e renderli disponibili per un'analisi più dettagliata con tecniche opportune, raccogliendoli in un data store adeguato. In particolare si utilizzeranno come input i dati forniti dal dataset open sugli spostamenti urbani di Tokyo [OpenPFLOW](https://github.com/sekilab/OpenPFLOW), che verranno dapprima riversati su [Kafka](https://kafka.apache.org/) attraverso una interfaccia MQTT e poi riorganizzati all'interno di [MongoDB](https://www.mongodb.com/).
 
-## Architettura
+# Architettura
 
-I dati in ingresso verranno gestiti da un servizio che si occuperà di ricevere gli eventi e di scriverli su Kafka. Questo servizio potrà esporre le interfacce di ricezione che si riterranno più opportune. I dati potranno arrivare tramite una interfaccia REST oppure essere acquisiti da un broker MQTT. Il servizio dovrà comunque poter essere facilmente esteso per poter acquisire i dati dalla sorgente più opportuna.
+L'architettura di questo progetto prevede che i dati siano inviati attraverso una interfaccia MQTT e che siano opportunamente depositati all'interno di un database MongoDB. Per fare questo sono state realizzate tre differenti modelli architetturali che, sempre supportandosi sopra Kafka, utilizzano diverse tecnologie. Le tre architetture sono illustrate qui di seguito.
 
-La gestione dei dati su Kafka avverrà usando il formato [Avro](https://avro.apache.org/), ormai standard nonché consigliato. Una volta depositati nel topic, i dati verranno riversati in MongoDB usando il [connettore Kafka apposito](https://www.mongodb.com/kafka-connector).
+## Architettura con broker MQTT e servizio di ingestione dei dati custom (service architecture)
+In questa prima architettura si utilizza un broker MQTT come prima interfaccia verso l'esterno. I dati che arrivano su un topic vengono letti da un servizio custom ed inviati a Kafka tramite un producer. Il servizio in questo scenario si occupa anche di rimappare il messaggio sul topic MQTT sia in struttura che in formato per renderlo subito pronto ad assere depositato su MongoDB. Per far questo si usa l'apposito (Sink) Connector che legge dal topic Kafka e scrive in una apposita collezione su database.
+![Architettura](service-architecture.png)
 
-![Architettura](architettura.png)
+## Architettura con broker MQTT e utilizzo di Kafka Connect per l'ingestione dei dati (connector architecture)
+Questa architettura è molto simile alla prima con la differenza che invece di usare un servizio custom come ponte tra il broker MQTT e Kafka, si usa un (Source) Connector. Il dato in ingresso è ancora convertito di formato ma la struttura rimarrà inalterata. Come per la prima architettura, sarà un connettore ad occuparsi di trasferire i dati dal topic Kafka a MongoDB. 
+![Architettura](connector-architecture.png)
+
+## Architettura con Kafka MQTT Proxy per l'ingestione dei dati (proxy architecture)
+In questa architettura non si utilizza più un vero e proprio broker MQTT, ma si utilizzerà invece il Kafka MQTT Proxy il quale consente di esporre una interfaccia MQTT ma di usare direttamente Kafka come protocollo. Questo fa si che il dato "grezzo" sul topic, prima di arrivare al database, debba essere ristrutturato e convertito. Per fare questo viene aggiunto un semplice servizio Kafka Streams che converte i dati dal topic "MQTT" e li riscrive convertiti in un altro topic. Di nuovo, un connettore leggerà da quest'ultimo topic e depositerà i dati in MongoDB.
+![Architettura](proxy-architecture.png)
 
 ## Servizio di acquisizione dati
 
