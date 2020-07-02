@@ -3,11 +3,9 @@ package it.uniupo.disit.pissir.it;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
-import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -27,25 +25,23 @@ import static org.junit.Assert.fail;
 public class HeavyLoadingTest {
     private final CsvParser parser = new CsvParser();
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private static String brokerURL;
-    private static String topic;
     private static String dataDir;
+    private MqttSetup mqttSetup;
 
     @BeforeClass
     public static void setup() {
         Config config = ConfigFactory.load();
-        brokerURL = config.getString("services.mosquitto.url");
-        topic = config.getString("services.mosquitto.topic");
         dataDir = config.getString("services.csv.directory");
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        this.mqttSetup = new MqttSetup();
     }
 
     @Test
     public void test() throws Exception {
-        MqttClient clientPublisher = new MqttClient(brokerURL, MqttClient.generateClientId(), new MqttDefaultFilePersistence("/tmp"));
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setCleanSession(false);
-        clientPublisher.connect(options);
-        MqttTopic testTopic = clientPublisher.getTopic(topic);
+        MqttTopic testTopic = mqttSetup.getTopic();
         List<String> csvFiles = getCsvFiles(dataDir);
 
         for (String csvFile : csvFiles) {
