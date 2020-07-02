@@ -7,11 +7,8 @@ import com.mongodb.client.MongoDatabase;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.bson.Document;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
-import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -28,28 +25,26 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 
 public class EndToEndTest {
-    CsvParser parser = new CsvParser();
-    ClassLoader classLoader = getClass().getClassLoader();
-    ObjectMapper objectMapper = new ObjectMapper();
-    static String brokerURL;
-    static String topic;
-    static String mongoDbHost;
-    static int mongoDbPort;
-    static String mongoDbDatabase;
-    MongoCollection<Document> collection;
+    private final CsvParser parser = new CsvParser();
+    private final ClassLoader classLoader = getClass().getClassLoader();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static String mongoDbHost;
+    private static int mongoDbPort;
+    private static String mongoDbDatabase;
+    private MongoCollection<Document> collection;
+    private MqttSetup mqttSetup;
 
     @BeforeClass
     public static void setup() {
         Config config = ConfigFactory.load();
-        brokerURL = config.getString("services.mosquitto.url");
-        topic = config.getString("services.mosquitto.topic");
         mongoDbHost = config.getString("services.mongodb.host");
         mongoDbPort = config.getInt("services.mongodb.port");
         mongoDbDatabase = config.getString("services.mongodb.database");
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+        this.mqttSetup = new MqttSetup();
         MongoClient mongoClient = new MongoClient(mongoDbHost, mongoDbPort);
         MongoDatabase database = mongoClient.getDatabase(mongoDbDatabase);
         this.collection = database.getCollection("OpenPFLOW");
@@ -68,7 +63,7 @@ public class EndToEndTest {
         File file = new File(resource.getFile());
 
         Stream<Csv> csvStream = parser.csvLines(file)
-                .map(line -> parser.parse(line))
+                .map(parser::parse)
                 .flatMap(Optional::stream);
 
         assertEquals(71, csvStream.count());
@@ -76,19 +71,14 @@ public class EndToEndTest {
 
     @Test
     public void publish() throws Exception {
-        MqttClient clientPublisher = new MqttClient(brokerURL, MqttClient.generateClientId(), new MqttDefaultFilePersistence("/tmp"));
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setCleanSession(false);
-        options.setMaxInflight(1000);
-        clientPublisher.connect(options);
-        MqttTopic testTopic = clientPublisher.getTopic(topic);
+        MqttTopic testTopic = mqttSetup.getTopic();
 
         URL resource = classLoader.getResource("small.csv");
         assertNotNull(resource);
         File file = new File(resource.getFile());
 
         Stream<Csv> csvStream = parser.csvLines(file)
-                .map(line -> parser.parse(line))
+                .map(parser::parse)
                 .flatMap(Optional::stream);
 
         csvStream.forEach(csv -> {
