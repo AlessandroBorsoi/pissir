@@ -27,15 +27,15 @@ La directory `docker` contiene tutti i file necessari per startare in automatico
 
 Per automatizzare il processo di esecuzione delle tre architetture realizzate, sono stati creati altrettanti file di script bash eseguibili dalla radice del progetto con
 ```bash
-sh start-<nome acrhitettura>-arch.sh
+sh start-<nome architettura>-arch.sh
 ```
-e stoppabili eseguendo il singolo file
+ed è possibile terminare il sistema eseguendo
 ```bash
 sh stop.sh
 ```
 
 I file di start al loro interno eseguono le seguenti operazioni:
-- compilano, se necessario, il servizio associato a quella architettura
+- compilano, se necessario, il servizio associato a quella architettura;
 - dopo aver eseguito la build, generano l'immagine docker del servizio stesso usando il `Dockerfile` presente nei singoli servizi;
 - viene eseguito il comando `docker-compose up` sullo specifico descrittore `docker-compose.yml` nella cartella `docker`;
 - ci si mette in attesa che il o i connettori siano running per eseguire una `curl` di configurazione con il file json appropriato;
@@ -43,3 +43,6 @@ I file di start al loro interno eseguono le seguenti operazioni:
 a quel punto tutti i servizi necessari dovrebbero essere attivi ed è possibile eseguire i test.
 
 Da notare che la prima volta che viene eseguito uno start, l'operazione potrebbe richiedere diversi minuti dovuti allo scaricamento sia delle dipendenze dei servizi che delle immagini docker necessarie.
+
+## Test
+TODO: automatizzare la procedura tramite script
