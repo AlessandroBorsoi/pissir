@@ -45,4 +45,4 @@ a quel punto tutti i servizi necessari dovrebbero essere attivi ed è possibile 
 Da notare che la prima volta che viene eseguito uno start, l'operazione potrebbe richiedere diversi minuti dovuti allo scaricamento sia delle dipendenze dei servizi che delle immagini docker necessarie.
 
 ## Test
-TODO: automatizzare la procedura tramite script
+I test in generale possono essere eseguiti con il comando `gradle test` nel singolo modulo oppure tramite IDE. C'è però un test nel modulo `integration-tests` che occorre che venga configurato passandogli tramite variabile d'ambiente una directory contenente uno o più csv presi dal dataset di riferimento. Per agevolare la procedure, questo test può essere eseguito tramite lo script `test.sh` avendo cura di configurare la giusta cartella.
