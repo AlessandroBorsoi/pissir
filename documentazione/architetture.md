@@ -12,12 +12,12 @@ In questa prima architettura si utilizza un broker MQTT come prima interfaccia v
 ![Architettura](service-architecture.png)
 
 ## Architettura con broker MQTT e utilizzo di Kafka Connect per l'ingestione dei dati (connector architecture)
-Questa architettura è molto simile alla prima con la differenza che invece di usare un servizio custom come ponte tra il broker MQTT e Kafka, si usa un (Source) Connector. Il dato in ingresso è ancora convertito di formato ma la struttura rimarrà inalterata. Come per la prima architettura, sarà un connettore ad occuparsi di trasferire i dati dal topic Kafka a MongoDB. 
+Questa architettura è molto simile alla prima con la differenza che, invece di usare un servizio custom come ponte tra il broker MQTT e Kafka, si usa un (Source) Connector. Il dato in ingresso è ancora convertito di formato ma la struttura rimarrà inalterata. Come per la prima architettura, sarà un connettore ad occuparsi di trasferire i dati dal topic Kafka a MongoDB. 
 
 ![Architettura](connector-architecture.png)
 
 ## Architettura con Kafka MQTT Proxy per l'ingestione dei dati (proxy architecture)
-In questa architettura non si utilizza più un vero e proprio broker MQTT, ma si utilizzerà invece il Kafka MQTT Proxy il quale consente di esporre una interfaccia MQTT ma di usare direttamente Kafka come protocollo. Questo fa si che il dato "grezzo" sul topic, prima di arrivare al database, debba essere ristrutturato e convertito. Per fare questo viene aggiunto un semplice servizio Kafka Streams che converte i dati dal topic "MQTT" e li riscrive convertiti in un altro topic. Di nuovo, un connettore leggerà da quest'ultimo topic e depositerà i dati in MongoDB.
+In questa architettura non si utilizza più un vero e proprio broker MQTT, ma si utilizzerà invece il Kafka MQTT Proxy il quale consente di esporre una interfaccia MQTT usando direttamente Kafka come broker. Questo fa si che il dato "grezzo" sul topic, prima di arrivare al database, debba essere ristrutturato e convertito. Per fare questo viene aggiunto un semplice servizio [Kafka Streams](https://kafka.apache.org/documentation/streams/) che legge i dati dal topic "MQTT" e li riscrive convertiti in un altro topic. Di nuovo, un connettore leggerà i dati da quest'ultimo topic e depositerà in MongoDB.
 
 ![Architettura](proxy-architecture.png)
 
