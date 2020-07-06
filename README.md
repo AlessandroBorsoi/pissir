@@ -16,8 +16,8 @@ In [questa sezione](documentazione/docker.md) sono descritti tutti i servizi inc
 ## Servizi
 In questa sezioni vengono descritti più in dettaglio i servizi e come sono stati strutturati.
 
-### MQTT ingestion service
+### MQTT Ingestion Service
 Il servizio `mqtt-ingestion-service` è descritto [qui](documentazione/mqtt-ingestion-service.md).
 
-### MQTT proxy service
+### MQTT Proxy Service
 Il servizio `mqtt-proxy-service` è descritto [qui](documentazione/mqtt-proxy-service.md).
