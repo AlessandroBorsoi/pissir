@@ -14,7 +14,7 @@ I dettagli di come sono strutturati i dati all'interno del sistema e di come ven
 In [questa sezione](documentazione/docker.md) sono descritti tutti i servizi inclusi ed avviati con docker compose.
 
 ## Servizi
-In questa sezioni vengono descritti più in dettaglio i servizi e come sono stati strutturati.
+In questa sezioni vengono descritti più in dettaglio i servizi implementati e come sono stati strutturati.
 
 ### MQTT Ingestion Service
 Il servizio `mqtt-ingestion-service` è descritto [qui](documentazione/mqtt-ingestion-service.md).
