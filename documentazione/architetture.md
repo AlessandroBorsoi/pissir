@@ -4,7 +4,7 @@ Lo scopo di questo progetto è quello di realizzare un sistema che sia in grado 
 
 # Architettura
 
-L'architettura di questo progetto prevede che i dati siano inviati attraverso una interfaccia MQTT e che siano opportunamente depositati all'interno di un database MongoDB. Per fare questo sono state realizzate tre differenti modelli architetturali che, sempre supportandosi sopra Kafka, utilizzano diverse tecnologie. Le tre architetture sono illustrate qui di seguito.
+Lo scopo di questo progetto consiste nel realizzare un sistema in cui i dati possano essere inviati attraverso una interfaccia MQTT e che siano opportunamente depositati all'interno di un database MongoDB. Per fare questo sono state realizzate tre differenti architetture che, sempre avendo Kafka come elemento principale, sfruttino diverse tecnologie. Gli elementi utilizzati non sono necessariamente tra loro mutualmente escludenti ma si possono potenzialmente combinare ulteriormente. Le tre architetture sono illustrate nelle sezioni seguenti.
 
 ## Architettura con broker MQTT e servizio di ingestione dei dati custom (service architecture)
 In questa prima architettura si utilizza un broker MQTT come prima interfaccia verso l'esterno. I dati che arrivano su un topic vengono letti da un servizio custom ed inviati a Kafka tramite un producer. Il servizio in questo scenario si occupa anche di rimappare il messaggio sul topic MQTT sia in struttura che in formato per renderlo subito pronto ad assere depositato su MongoDB. Per far questo si usa l'apposito (Sink) Connector che legge dal topic Kafka e scrive in una apposita collezione su database.
