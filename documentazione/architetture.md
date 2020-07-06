@@ -23,4 +23,4 @@ In questa architettura non si utilizza più un vero e proprio broker MQTT, ma si
 
 ## Integration test
 
-A supporto del progetto, sono stati creati dei test di integrazione end-to-end che, leggendo i dati da dei csv disponibili del dataset di riferimento, li immettono nel sistema attraverso l'interfaccio MQTT per poi verificare che siano stati depositati all'interno di MongoDB. Essendo i sistemi composti da molte parti, sono stati creati degli script che avviano automaticamente un [docker-compose](https://docs.docker.com/compose/) che comprende tutti i servizi necessari opportunamente configurati. 
+A supporto del progetto, sono stati creati dei test di integrazione end-to-end che, leggendo i dati da dei csv disponibili del dataset di riferimento, li immettono nel sistema attraverso l'interfaccia MQTT per poi verificare che siano stati depositati all'interno di MongoDB. Essendo i sistemi composti da molte parti, sono stati creati degli script che avviano automaticamente un [docker-compose](https://docs.docker.com/compose/) che comprende tutti i servizi necessari opportunamente configurati. 
