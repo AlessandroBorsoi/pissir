@@ -21,18 +21,6 @@ In questa architettura non si utilizza più un vero e proprio broker MQTT, ma si
 
 ![Architettura](proxy-architecture.png)
 
-## Servizio di acquisizione dati
-
-Il servizio di acquisizione si pone come interfaccia tra i sistemi esterni che generano i dati e il sistema interno atto a processarli e renderli disponibili per ulteriori analisi. Il servizio dovrà essere in grado di integrarsi facilmente con diversi tipi di sorgenti; potrebbe in prima istanza esporre una interfaccia REST usabile da un client (come ad esempio una applicazione mobile) per inviare i dati degli spostamenti. Un'altra interfaccia potrebbe essere quella verso un broker MQTT per poter ingestionare gli eventi esposti da dispositivi IoT. Avendo già a disposizione un batch di eventi sotto forma di csv, un'altra interaccia potrebbe essere l'acquisizione di dati in bulk situati, ad esempio, in un repository s3.
-
-Qualsiasi sia il formato, i dati dovranno essere inviati a Kafka usando Avro.
-
-## Passaggio dati da Kafka a MongoDB
-
-Una volta che i dati sono all'interno del topic Kafka è possibile accedervi e depositarli in altri data store in diversi modi. È possibile creare un servizio consumer che legge dal topic e scrive sulla destinazione scelta oppure, se non ci sono complesse trasformazioni da effettuare, è possibile usare il servizio Kafka Connect che semplifica il transito di dati da e per Kafka da specifiche sorgenti. Esistono già diversi connettori per i database più comuni (compreso MongoDB) ma è comunque possibile scriverne uno ad hoc. In questo caso useremo il connettore già disponibile.
-
-Il formato e il layout dei dati su MongoDB è da stabilire e verrà definito in seguito.
-
 ## Integration test
 
-Essendo un sistema composto da molti elementi distinti, è interessante considerare lo sviluppo di test di integrazione end-to-end. Una proposta potrebbe essere quella di scrivere una piccola applicazione che, leggendo i molti dati già disponibili in formato csv, li immetta come eventi nel sistema attraverso la o le interfaccie che si decideranno di implementare. I dati inseriti dovranno quindi poter essere controllati tramite semplici query sul sitema finale (MongoDB in questo caso). A livello pratico è possibile usare Docker per istanziare il sistema in ambiente locale, ma un uso di questo test su altri ambienti dovrebbe essere facilmente eseguibile semplicemente cambiando gli indirizzi di puntamento dei vari sistemi tramite configurazione.
+A supporto del progetto, sono stati creati dei test di integrazione end-to-end che, leggendo i dati da dei csv disponibili del dataset di riferimento, li immettono nel sistema attraverso l'interfaccio MQTT per poi verificare che siano stati depositati all'interno di MongoDB. Essendo i sistemi composti da molte parti, sono stati creati degli script che avviano automaticamente un [docker-compose](https://docs.docker.com/compose/) che comprende tutti i servizi necessari opportunamente configurati. 
