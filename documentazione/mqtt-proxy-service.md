@@ -2,11 +2,11 @@
 
 In questa sezione viene descritta l'implementazione del servizio, contenuto nel modulo `mqtt-proxy-service`, che si occupa di convertire i dati depositati su un topic dal Kafka MQTT Proxy.
 
-Nella radice del modulo sono contenuti il `Dockerfile` necessario al plugin gradle (`com.palantir.docker`) per poter creare una immagine docker del servizio, e il file di build di gradle. L'altro plugin importato serve per generare comodamente l'uber-jar eseguibile.
+Nella radice del modulo sono contenuti il `Dockerfile` necessario al plugin gradle (`com.palantir.docker`) per poter creare una immagine docker del servizio, e il file di build di gradle. L'altro plugin importato (`com.github.johnrengelman.shadow`) serve per generare comodamente l'uber-jar eseguibile.
 
-Le dipendenze importate, a parte l'apposita libreria di Kafka Streams, sono quelle necessarie a lavorare con Avro, a maneggiare json, al logging e alla gestione delle configurazioni. Si nota che il modulo `avro` è una dipendenza avendo necessità di produrre i dati nella struttura definita in quel modulo.
+Le dipendenze, a parte l'apposita libreria di Kafka Streams, sono quelle necessarie a lavorare con Avro, a maneggiare json, al logging e alla gestione delle configurazioni. Si nota che il modulo `avro` è una dipendenza avendo necessità di produrre i dati nella struttura definita in quel modulo.
 
-Il servizio è molto semplice ed è quasi interamente contenuto nella classe `it.uniupo.disit.pissir.mqtt.proxy.service.MqttProxyService`, al netto di una classe di utilità e a due classi POJO. Per lavorare con Kafka Streams occore fondamentalmente definire un oggetto `KafkaStreams` a cui vengono passate le proprietà di configurazione e la topologia della trasformazione da effettuare. Una volta creato è sufficiente eseguirne lo start.
+Il servizio è molto semplice ed è quasi interamente contenuto nella classe `MqttProxyService`, al netto di una classe di utilità e a due classi POJO. Per lavorare con Kafka Streams occore fondamentalmente definire un oggetto `KafkaStreams` a cui vengono passate le proprietà di configurazione e la topologia della trasformazione da effettuare. Una volta creato, è sufficiente eseguirne lo start.
 
 Per definire la topologia si utilizza un builder. In questo caso la trasformazione è abbastanza semplice e viene riportata qui per semplicità:
 
