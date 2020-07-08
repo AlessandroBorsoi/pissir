@@ -9,7 +9,7 @@ La struttura è impostata come un progetto multi modulo Gradle. I moduli sono i 
 oltre alla directory `docker` e alla (autoesplicativa) `documentazione`.
 
 ## avro
-In `avro` è contenuta la definizione dello schema [Avro](https://avro.apache.org/) usato da entrambi gli altri servizi. È stato separato in questo modulo proprio per evitare duplicazioni e per poterlo importare come dipendenza da chi ne necessita. Lo schema è definito in [IDL](https://avro.apache.org/docs/current/idl.html) (contenuto in un file `.avdl`) da cui viene automaticamente generato tutto il codice Java necessario usando il [`gradle-avro-plugin`](https://github.com/davidmc24/gradle-avro-plugin).
+In `avro` è contenuta la definizione dello schema [Avro](https://avro.apache.org/) usato da entrambi gli mqtt-*-service. È stato separato in questo modulo proprio per evitare duplicazioni e per poterlo importare come dipendenza da chi ne necessita. Lo schema è definito in [IDL](https://avro.apache.org/docs/current/idl.html) (contenuto in un file `.avdl`) da cui viene automaticamente generato tutto il codice Java necessario usando il [`gradle-avro-plugin`](https://github.com/davidmc24/gradle-avro-plugin).
 
 ## mqtt-ingestion-service
 In questo modulo è contenuto il servizio custom di ingestione dei dati inseriti tramite broker MQTT. Il servizio utilizza la libreria [Eclipse Paho](https://www.eclipse.org/paho/clients/java/) per leggere i dati dal broker MQTT e un [producer](https://kafka.apache.org/documentation/#producerapi) per scriverli sul broker Kafka.

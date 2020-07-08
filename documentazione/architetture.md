@@ -9,17 +9,17 @@ Lo scopo di questo progetto consiste nel realizzare un sistema in cui i dati pos
 ## Architettura con broker MQTT e servizio di ingestione dei dati custom (service architecture)
 In questa prima architettura si utilizza un broker MQTT come prima interfaccia verso l'esterno. I dati che arrivano su un topic vengono letti da un servizio custom ed inviati a Kafka tramite un producer. Il servizio in questo scenario si occupa anche di rimappare il messaggio sul topic MQTT sia in struttura che in formato per renderlo subito pronto ad assere depositato su MongoDB. Per far questo si usa l'apposito (Sink) Connector che legge dal topic Kafka e scrive in una apposita collezione su database.
 
-![Architettura](service-architecture.png)
+![Service architecture](service-architecture.png)
 
 ## Architettura con broker MQTT e utilizzo di Kafka Connect per l'ingestione dei dati (connector architecture)
 Questa architettura è molto simile alla prima con la differenza che, invece di usare un servizio custom come ponte tra il broker MQTT e Kafka, si usa un (Source) Connector. Il dato in ingresso è ancora convertito di formato ma la struttura rimarrà inalterata. Come per la prima architettura, sarà un connettore ad occuparsi di trasferire i dati dal topic Kafka a MongoDB. 
 
-![Architettura](connector-architecture.png)
+![Connector architecture](connector-architecture.png)
 
 ## Architettura con Kafka MQTT Proxy per l'ingestione dei dati (proxy architecture)
 In questa architettura non si utilizza più un vero e proprio broker MQTT, ma si utilizzerà invece il Kafka MQTT Proxy il quale consente di esporre una interfaccia MQTT usando direttamente Kafka come broker. Questo fa si che il dato "grezzo" sul topic, prima di arrivare al database, debba essere ristrutturato e convertito. Per fare questo viene aggiunto un semplice servizio [Kafka Streams](https://kafka.apache.org/documentation/streams/) che legge i dati dal topic "MQTT" e li riscrive convertiti in un altro topic. Di nuovo, un connettore leggerà i dati da quest'ultimo topic e li depositerà in MongoDB.
 
-![Architettura](proxy-architecture.png)
+![Proxy architecture](proxy-architecture.png)
 
 ## Integration test
 
