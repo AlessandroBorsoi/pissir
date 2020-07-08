@@ -65,8 +65,6 @@ services:
     ports:
       - "1883:1883"
     environment:
-      JVM_OPTS: "-Xmx4g -Xms4g"
-      CATALINA_OPTS: "-Xmx4g -Xms4g"
       KAFKA_MQTT_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:19092
       KAFKA_MQTT_TOPIC_REGEX_LIST: pflow:.*
       KAFKA_MQTT_LISTENERS: "0.0.0.0:1883"

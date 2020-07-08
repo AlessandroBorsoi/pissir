@@ -3,9 +3,6 @@
 printf "Running docker compose...\n"
 docker-compose -f ./docker/connector-architecture/docker-compose.yml up -d
 
-echo "Creating topic"
-#docker run --net=host --rm confluentinc/cp-kafka:5.5.0 kafka-topics --create --topic open-pflow --partitions 1 --replication-factor 1 --if-not-exists --zookeeper localhost:2181
-
 echo "Waiting for connectors up"
 until $(curl --output /dev/null --silent --head --fail localhost:8083/connectors); do
     printf '.'
