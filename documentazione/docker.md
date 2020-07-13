@@ -4,7 +4,7 @@ In questo progetto sono definiti tre file `docker-compose.yml` che includono tut
 
 - `kafka`, singolo broker per questo ambiente di test;
 - `zookeeper`, necessario a Kafka stesso per poter operare;
-- `kafka-schema-registry`, servizio necessario per lavorare con il formato Avro in cui vengono registrati gli schema dei modelli usati. In questo modo è possibile inserire nel payload solo l'id dello schema usato, ed ogni servizi che legge o scrive può usare lo schema registry per recuperarne, appunto, lo schema;
+- `kafka-schema-registry`, servizio necessario per lavorare con il formato Avro in cui vengono registrati gli schema dei modelli usati. In questo modo è possibile inserire nel payload solo l'id dello schema usato, ed ogni servizio che legge o scrive può usare lo schema registry per recuperarne, appunto, lo schema;
 - `kafka-connect`, è il servizio che gestisce i connettori. Nel caso dei connettori usati (Sink per MongoDB e Source per MQTT) è necessario includere anche i jar specifici (presenti nel repository in `docker/connectors`) e caricare le configurazioni necessarie (file json dentro la directory `docker`);
 - `mongo-db`, database in cui riversare i dati;
 - `kafka-rest-proxy`, servizio che espone una interfaccia REST sopra Kafka e necessario ai servizi di monitoring inclusi ed elencati di seguito;
