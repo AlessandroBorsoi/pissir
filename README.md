@@ -4,7 +4,7 @@ Repository per il corso di Progettazione e Implementazione di Sistemi Software I
 ## Descrizione generale e architettura del progetto
 L'architettura dei sistemi implementati dal progetto è descritta [qui](documentazione/architetture.md).
 
-## Compilazione
+## Struttura, compilazione ed esecuzione
 La struttura del progetto, le istruzioni per compilarlo ed eseguire i test sono descritte [qui](documentazione/struttura.md).
 
 ## Formato dei dati
