@@ -15,6 +15,6 @@ In questo progetto sono definiti tre file `docker-compose.yml` che includono tut
 Oltre a questi servizi, quelli specifici per le varie architetture sono:
 - `mosquitto`, broker MQTT usato da due delle tre architetture;
 - `mqtt-proxy`, servizio che sostituisce il broker MQTT usato solo nella proxy architecture;
-- `kafka-setup`, servizio che implementa un workaround per creare i topic allo startup. Necessario nella proxy architecture in quanto il servizio Kafka Streams andrebbe in errore non trovando il topic da cui deve leggere all'avvio;
+- `kafka-setup`, servizio che implementa un workaround per creare i topic allo startup. Necessario nella proxy architecture in quanto il servizio Kafka Streams andrebbe in errore se non trovasse il topic da cui deve leggere all'avvio;
 - `mqtt-ingestion-service`, servizio di ingestione custom (il cui codice si trova in questo repository), opportunamente dockerizzato nello script di startup;   
 - `mqtt-proxy-service`, servizio Kafka Streams (il cui codice si trova in questo repository), opportunamente dockerizzato nello script di startup.
