@@ -12,7 +12,7 @@ In questa prima architettura si utilizza un broker MQTT come interfaccia verso l
 ![Service architecture](service-architecture.png)
 
 ## Architettura con broker MQTT e utilizzo di Kafka Connect per l'ingestione dei dati (connector architecture)
-Questa architettura è molto simile alla prima con la differenza che, invece di usare un servizio custom come ponte tra il broker MQTT e Kafka, si usa un (Source) Connector. Il dato in ingresso è ancora convertito di formato ma la struttura rimarrà inalterata. Come per la prima architettura, sarà un connettore ad occuparsi di trasferire i dati dal topic Kafka a MongoDB. 
+Questa architettura è molto simile alla prima con la differenza che, invece di usare un servizio custom come ponte tra il broker MQTT e Kafka, si usa un (Source) [Connector](https://docs.lenses.io/connectors/source/mqtt.html). Il dato in ingresso è ancora convertito in formato ma la struttura rimarrà inalterata. Come per la prima architettura, sarà un connettore ad occuparsi di trasferire i dati dal topic Kafka a MongoDB. 
 
 ![Connector architecture](connector-architecture.png)
 
