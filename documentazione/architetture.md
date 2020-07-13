@@ -17,7 +17,7 @@ Questa architettura è molto simile alla prima con la differenza che, invece di 
 ![Connector architecture](connector-architecture.png)
 
 ## Architettura con Kafka MQTT Proxy per l'ingestione dei dati (proxy architecture)
-In questa architettura non si utilizza più un vero e proprio broker MQTT, ma si utilizzerà invece il Kafka MQTT Proxy il quale consente di esporre una interfaccia MQTT usando direttamente Kafka come broker. Questo fa si che il dato "grezzo" sul topic, prima di arrivare al database, debba essere ristrutturato e convertito. Per fare questo viene aggiunto un semplice servizio [Kafka Streams](https://kafka.apache.org/documentation/streams/) che legge i dati dal topic "MQTT" e li riscrive convertiti in un altro topic. Di nuovo, un connettore leggerà i dati da quest'ultimo topic e li depositerà in MongoDB.
+In questa architettura non si utilizza più un vero e proprio broker MQTT, ma si utilizzerà invece il [Kafka MQTT Proxy](https://docs.confluent.io/current/kafka-mqtt/index.html) il quale consente di esporre una interfaccia MQTT usando direttamente Kafka come broker. Questo fa si che il dato "grezzo" sul topic, prima di arrivare al database, debba essere ristrutturato e convertito. Per fare questo viene aggiunto un semplice servizio [Kafka Streams](https://kafka.apache.org/documentation/streams/) che legge i dati dal topic "MQTT" e li riscrive convertiti in un altro topic. Di nuovo, un connettore leggerà i dati da quest'ultimo topic e li depositerà in MongoDB.
 
 ![Proxy architecture](proxy-architecture.png)
 
