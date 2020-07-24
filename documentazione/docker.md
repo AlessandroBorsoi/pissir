@@ -18,3 +18,5 @@ Oltre a questi servizi, quelli specifici per le varie architetture sono:
 - `kafka-setup`, servizio che implementa un workaround per creare i topic allo startup. Necessario nella proxy architecture in quanto il servizio Kafka Streams andrebbe in errore all'avvio se non trovasse il topic da cui deve leggere;
 - `mqtt-ingestion-service`, servizio di ingestione custom (il cui codice si trova in questo repository), opportunamente dockerizzato nello script di startup;   
 - `mqtt-proxy-service`, servizio Kafka Streams (il cui codice si trova in questo repository), opportunamente dockerizzato nello script di startup.
+
+I servizi utilizzano dei volumi che sono stati configurati per risiedere nella directory `/tmp/volumes`. Questo fa si che alcuni elementi del sistema sopravvivono allo stop dei container, come ad esempio le configurazioni dei connettori. È quindi possibile eliminare a mano la cartella per partire con uno stato iniziale del sistema pulito in fase di start.

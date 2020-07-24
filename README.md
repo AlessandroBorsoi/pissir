@@ -21,3 +21,6 @@ Il servizio `mqtt-ingestion-service` è descritto [qui](documentazione/mqtt-inge
 
 ### MQTT Proxy Service
 Il servizio `mqtt-proxy-service` è descritto [qui](documentazione/mqtt-proxy-service.md).
+
+# Considerazioni finali
+In [questa](documentazione/considerazioni.md) sezione sono contenute le considerazioni finali sullo svolgimento del progetto rispetto alle difficoltà incontrate.
