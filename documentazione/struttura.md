@@ -24,7 +24,6 @@ In `integration-tests` sono contenuti i test end-to-end applicabili indifferente
 La directory `docker` contiene tutti i file necessari per avviare in automatico le tre architetture usando `docker-compose`. Oltre ai tre `docker-compose.yml`, sono presenti anche i jar dei connettori usati e i file json necessari per configurarli.
 
 # Compilazione ed esecuzione
-
 Per automatizzare il processo di esecuzione delle tre architetture realizzate, sono stati creati altrettanti file di script bash eseguibili dalla radice del progetto con
 ```bash
 sh start-<nome architettura>-arch.sh
@@ -33,6 +32,7 @@ ed è possibile terminarli indefferentemente eseguendo
 ```bash
 sh stop.sh
 ```
+Da notare che è necessario usare la JDK 11 per poter effettuare i vari passi di compilazione.
 
 Al loro interno, i file di start eseguono le seguenti operazioni:
 - compilano, se necessario, il servizio associato a quella architettura;
